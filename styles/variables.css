@@ -1,0 +1,79 @@
+/* AI+X 小院社群 - CSS 变量 */
+:root {
+  /* 色彩 - 治愈温柔系 */
+  --color-primary: #E8D5C4;
+  --color-primary-light: #F2E8DC;
+  --color-secondary: #C5D4C0;
+  --color-secondary-light: #D8E6D3;
+  --color-accent: #D4A5A5;
+  --color-accent-light: #E5C5C5;
+  --color-background: #FAF7F4;
+  --color-surface: #FFFFFF;
+  --color-border: #EDE8E3;
+  --color-border-light: #F5F2EF;
+
+  /* 文字色 */
+  --color-text-primary: #5C5C5C;
+  --color-text-secondary: #8B8B8B;
+  --color-text-hint: #B5B5B5;
+
+  /* 字体 */
+  --font-serif: 'Noto Serif SC', 'Songti SC', serif;
+  --font-sans: 'Noto Sans SC', 'PingFang SC', sans-serif;
+  --font-accent: 'Quicksand', sans-serif;
+
+  /* 字号 */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --text-3xl: 36px;
+
+  /* 间距 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* 圆角 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 3px rgba(92, 92, 92, 0.06);
+  --shadow-md: 0 4px 12px rgba(92, 92, 92, 0.08);
+  --shadow-lg: 0 8px 24px rgba(92, 92, 92, 0.10);
+  --shadow-xl: 0 12px 36px rgba(92, 92, 92, 0.12);
+
+  /* 动效 */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 200ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+
+  /* 布局 */
+  --header-height: 64px;
+  --sidebar-width: 220px;
+  --content-max-width: 960px;
+}
+
+/* 暗色模式支持（可选） */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #F5F2EF;
+    --color-surface: #FFFFFF;
+    --color-text-primary: #5C5C5C;
+  }
+}

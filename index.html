@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI+X 小院</title>
+  <link rel="stylesheet" href="styles/variables.css">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/pages.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 头部 -->
+    <header class="header">
+      <div class="header-logo" onclick="navigate('home')">
+        <span>🏡</span>
+        <span>AI+X 小院</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" onclick="navigate('notifications')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span class="badge" id="notification-badge">3</span>
+        </button>
+        <div class="header-user" onclick="navigate('profile')">
+          <div class="header-user-avatar" id="user-avatar">桐</div>
+          <span style="font-size: 14px;">我的小窝</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 侧边导航 -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">🌸 温暖小院</div>
+      <nav>
+        <div class="nav-item active" data-page="home" onclick="navigate('home')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          <span>小院门厅</span>
+        </div>
+        <div class="nav-item" data-page="members" onclick="navigate('members')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <span>伙伴小屋</span>
+        </div>
+        <div class="nav-item" data-page="moments" onclick="navigate('moments')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span>暖心时刻</span>
+        </div>
+        <div class="nav-item" data-page="chat" onclick="navigate('chat')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span>闲谈圆桌</span>
+        </div>
+        <div class="nav-item" data-page="resources" onclick="navigate('resources')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span>成长宝藏</span>
+        </div>
+        <div class="nav-item" data-page="activities" onclick="navigate('activities')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <span>每周小聚</span>
+        </div>
+        <div class="nav-item" data-page="checkin" onclick="navigate('checkin')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+          <span>成长打卡</span>
+        </div>
+        <div class="nav-item" data-page="wishes" onclick="navigate('wishes')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+          <span>心愿悄悄话</span>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main-content" id="main-content">
+      <!-- 内容由 JS 动态渲染 -->
+    </main>
+
+    <!-- 底部导航（移动端） -->
+    <nav class="bottom-nav">
+      <div class="bottom-nav-items">
+        <div class="bottom-nav-item active" data-page="home" onclick="navigate('home')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          </svg>
+          <span>首页</span>
+        </div>
+        <div class="bottom-nav-item" data-page="members" onclick="navigate('members')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+          </svg>
+          <span>伙伴</span>
+        </div>
+        <div class="bottom-nav-item" data-page="moments" onclick="navigate('moments')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span>暖心</span>
+        </div>
+        <div class="bottom-nav-item" data-page="chat" onclick="navigate('chat')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span>闲聊</span>
+        </div>
+        <div class="bottom-nav-item" data-page="profile" onclick="navigate('profile')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span>我的</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- 模态框容器 -->
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal" id="modal-content">
+        <!-- 模态框内容由 JS 渲染 -->
+      </div>
+    </div>
+
+    <!-- Toast 提示 -->
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script src="scripts/store.js"></script>
+  <script src="scripts/router.js"></script>
+  <script src="scripts/components.js"></script>
+  <script src="scripts/app.js"></script>
+</body>
+</html>
