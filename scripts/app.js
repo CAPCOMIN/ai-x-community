@@ -4,14 +4,13 @@
   'use strict';
 
   // 初始化应用
-  function init() {
+  async function init() {
     console.log('🌸 AI+X 小院 启动中...');
 
-    // 检查是否首次访问
-    checkFirstVisit();
+    await Store.init();
 
-    // 渲染首页
-    Router.navigate('home');
+    updateShell();
+    Router.navigate(Store.isAuthenticated() ? 'home' : 'login');
 
     // 绑定全局事件
     bindGlobalEvents();
@@ -20,16 +19,6 @@
     updateNotificationBadge();
 
     console.log('🌸 AI+X 小院 准备就绪～');
-  }
-
-  // 检查首次访问
-  function checkFirstVisit() {
-    const visited = Store.get('visited', false);
-    if (!visited) {
-      // 首次访问，初始化默认数据
-      Store.set('visited', true);
-      console.log('首次访问，已初始化默认数据');
-    }
   }
 
   // 绑定全局事件
@@ -51,6 +40,12 @@
     // 页面渲染完成事件
     window.addEventListener('pageRendered', (e) => {
       console.log('页面渲染完成:', e.detail.page);
+      if (e.detail.page === 'chat') {
+        window.scrollChatToBottom?.();
+        window.startChatPolling?.();
+      } else {
+        window.stopChatPolling?.();
+      }
     });
   }
 
@@ -65,6 +60,19 @@
     }
   }
 
+  function updateShell() {
+    const user = Store.getCurrentUser();
+    const avatar = document.getElementById('user-avatar');
+    const name = document.getElementById('header-user-name');
+    if (avatar) avatar.textContent = user?.avatar || '我';
+    if (name) name.textContent = user ? user.name : '我的小窝';
+
+    document.querySelectorAll('.admin-only').forEach((node) => {
+      node.style.display = Store.isAdmin() ? '' : 'none';
+    });
+    updateNotificationBadge();
+  }
+
   // 页面加载完成后初始化
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
@@ -72,3 +80,21 @@
     init();
   }
 })();
+
+window.updateShell = function updateShellFromOutside() {
+  const user = Store.getCurrentUser();
+  const avatar = document.getElementById('user-avatar');
+  const name = document.getElementById('header-user-name');
+  if (avatar) avatar.textContent = user?.avatar || '我';
+  if (name) name.textContent = user ? user.name : '我的小窝';
+  document.querySelectorAll('.admin-only').forEach((node) => {
+    node.style.display = Store.isAdmin() ? '' : 'none';
+  });
+  const notifications = Store.getNotifications();
+  const unread = notifications.filter(n => !n.read).length;
+  const badge = document.getElementById('notification-badge');
+  if (badge) {
+    badge.textContent = unread;
+    badge.style.display = unread > 0 ? 'flex' : 'none';
+  }
+};

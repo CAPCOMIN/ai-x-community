@@ -3,40 +3,26 @@
 const Router = {
   currentPage: 'home',
   resourcesFilter: '全部',
-  membersFilter: 'all',
 
   // 页面映射
   pages: {
     home: '小院门厅',
     members: '伙伴小屋',
     moments: '暖心时刻',
-    chat: '小院群聊',
+    chat: '闲谈圆桌',
     resources: '成长宝藏',
     activities: '每周小聚',
     checkin: '成长打卡',
     wishes: '心愿悄悄话',
     profile: '我的小窝',
-    notifications: '通知',
-    login: '登录',
-    register: '注册'
+    notifications: '通知'
   },
 
   // 路由到页面
   navigate(page) {
-    if (!Store.isAuthenticated() && !['login', 'register'].includes(page)) {
-      page = 'login';
-    }
-    if (Store.isAuthenticated() && ['login', 'register'].includes(page)) {
-      page = 'home';
-    }
+    if (page === this.currentPage && page !== 'home') return;
+
     this.currentPage = page;
-    const isAuthPage = ['login', 'register'].includes(page);
-    document.body.classList.toggle('auth-page', isAuthPage);
-    document.body.classList.toggle('app-page', !isAuthPage);
-    Array.from(document.body.classList)
-      .filter(className => className.startsWith('page-'))
-      .forEach(className => document.body.classList.remove(className));
-    document.body.classList.add(`page-${page}`);
 
     // 更新导航状态
     this._updateNavState(page);
@@ -66,6 +52,10 @@ const Router = {
     const main = document.getElementById('main-content');
     if (!main) return;
 
+    // 添加页面退出动画
+    main.classList.add('page-exit-active');
+
+    setTimeout(() => {
       // 根据页面类型渲染
       switch(page) {
         case 'home':
@@ -98,12 +88,6 @@ const Router = {
         case 'notifications':
           main.innerHTML = this._renderNotificationsPage();
           break;
-        case 'login':
-          main.innerHTML = this._renderLoginPage();
-          break;
-        case 'register':
-          main.innerHTML = this._renderRegisterPage();
-          break;
         default:
           main.innerHTML = this._renderHomePage();
       }
@@ -114,6 +98,7 @@ const Router = {
 
       // 触发自定义事件
       window.dispatchEvent(new CustomEvent('pageRendered', { detail: { page } }));
+    }, 150);
   },
 
   // ===== 首页 =====
@@ -148,9 +133,9 @@ const Router = {
           <div class="quick-entry-icon">📚</div>
           <span class="quick-entry-label">成长宝藏</span>
         </div>
-        <div class="quick-entry-item" onclick="navigate('chat')">
-          <div class="quick-entry-icon">💬</div>
-          <span class="quick-entry-label">小院群聊</span>
+        <div class="quick-entry-item" onclick="navigate('moments')">
+          <div class="quick-entry-icon">💕</div>
+          <span class="quick-entry-label">暖心时刻</span>
         </div>
         <div class="quick-entry-item" onclick="navigate('activities')">
           <div class="quick-entry-icon">☕</div>
@@ -169,11 +154,11 @@ const Router = {
             <div class="post-header">
               <div class="post-avatar">${post.author?.avatar || '分'}</div>
               <div class="post-meta">
-                <div class="post-author">${escapeHtml(post.author?.name || '匿名伙伴')}</div>
+                <div class="post-author">${post.author?.name || '匿名伙伴'}</div>
                 <div class="post-time">${formatTime(post.timestamp)}</div>
               </div>
             </div>
-            <div class="post-content">${escapeHtml(post.content)}</div>
+            <div class="post-content">${post.content}</div>
             <div class="post-actions">
               <span class="post-action" onclick="toggleLike(${post.id})">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -202,10 +187,7 @@ const Router = {
 
   // ===== 伙伴小屋 =====
   _renderMembersPage() {
-    const allMembers = Store.getMembers();
-    const members = this.membersFilter === 'all'
-      ? allMembers
-      : allMembers.filter(member => (member.tags || []).includes(this.membersFilter));
+    const members = Store.getMembers();
 
     return `
       <div class="page-header fade-in">
@@ -214,21 +196,21 @@ const Router = {
       </div>
 
       <div class="flex flex-wrap gap-3 mb-6 fade-in" style="animation-delay: 100ms;">
-        <span class="tag ${this.membersFilter === 'all' ? 'active' : ''}" onclick="filterMembers('all')">全部伙伴</span>
-        <span class="tag ${this.membersFilter === 'AI爱好者' ? 'active' : ''}" onclick="filterMembers('AI爱好者')">AI爱好者</span>
-        <span class="tag ${this.membersFilter === '开发者' ? 'active' : ''}" onclick="filterMembers('开发者')">开发者</span>
-        <span class="tag ${this.membersFilter === '学习者' ? 'active' : ''}" onclick="filterMembers('学习者')">学习者</span>
-        <span class="tag ${this.membersFilter === '跨界探索' ? 'active' : ''}" onclick="filterMembers('跨界探索')">跨界探索</span>
+        <span class="tag active" onclick="filterMembers('all')">全部伙伴</span>
+        <span class="tag" onclick="filterMembers('AI爱好者')">AI爱好者</span>
+        <span class="tag" onclick="filterMembers('开发者')">开发者</span>
+        <span class="tag" onclick="filterMembers('学习者')">学习者</span>
+        <span class="tag" onclick="filterMembers('跨界探索')">跨界探索</span>
       </div>
 
       <div class="members-grid fade-in" style="animation-delay: 200ms;">
         ${members.map(member => `
           <div class="member-card" onclick="openMemberDetail(${member.id})">
-            <div class="member-avatar">${escapeHtml(member.avatar)}</div>
-            <div class="member-name">${escapeHtml(member.name)}</div>
-            <div class="member-intro">${escapeHtml(member.intro)}</div>
+            <div class="member-avatar">${member.avatar}</div>
+            <div class="member-name">${member.name}</div>
+            <div class="member-intro">${member.intro}</div>
             <div class="member-tags">
-              ${(member.tags || []).map(tag => `<span class="tag tag-sm">${escapeHtml(tag)}</span>`).join('')}
+              ${member.tags.map(tag => `<span class="tag tag-sm">${tag}</span>`).join('')}
             </div>
           </div>
         `).join('')}
@@ -268,11 +250,11 @@ const Router = {
             <div class="post-header">
               <div class="post-avatar">${post.author?.avatar || '分'}</div>
               <div class="post-meta">
-                <div class="post-author">${escapeHtml(post.author?.name || '匿名伙伴')}</div>
+                <div class="post-author">${post.author?.name || '匿名伙伴'}</div>
                 <div class="post-time">${formatTime(post.timestamp)}</div>
               </div>
             </div>
-            <div class="post-content">${escapeHtml(post.content)}</div>
+            <div class="post-content">${post.content}</div>
             <div class="post-actions">
               <span class="post-action" onclick="toggleLike(${post.id})">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -299,71 +281,63 @@ const Router = {
     `;
   },
 
-  // ===== 小院群聊 =====
+  // ===== 闲谈圆桌 =====
   _renderChatPage() {
-    const conversations = Store.getConversations();
-    const activeId = Store.getActiveConversationId();
-    const active = conversations.find(item => item.id === activeId) || conversations[0];
-    const messages = Store.getMessages(active?.id);
-    if (!conversations.length) {
-      Store.loadChats().then(() => {
-        if (this.currentPage === 'chat') this._renderPage('chat');
-      }).catch(error => Components.showToast(error.message));
-    }
+    const posts = Store.getPosts();
 
     return `
-      <div class="chat-layout fade-in">
-        <aside class="chat-list">
-          <div class="chat-list-header">
-            <h2>小院群聊</h2>
-            <span>${conversations.length} 个会话</span>
-          </div>
-          <div class="chat-conversations">
-            ${conversations.map(item => `
-              <button class="chat-conversation ${item.id === active?.id ? 'active' : ''}" onclick="openConversation(${item.id})">
-                <span class="chat-conversation-avatar">${item.type === 'group' ? '群' : '私'}</span>
-                <div class="chat-conversation-info" style="min-width: 0; flex: 1;">
-                  <strong>${escapeHtml(displayConversationTitle(item))}</strong>
-                  <small>${escapeHtml(item.lastMessage?.content || '暂无消息')}</small>
-                </div>
-              </button>
-            `).join('')}
-          </div>
-        </aside>
+      <div class="page-header fade-in">
+        <h1>🍵 闲谈圆桌</h1>
+        <p>围坐一起，随便聊聊天～</p>
+      </div>
 
-        <section class="chat-window">
-          ${active ? `
-            <div class="chat-window-header">
-              <div>
-                <h1>${escapeHtml(displayConversationTitle(active))}</h1>
-                <p>${active.type === 'group' ? '全员默认群，所有成员都会自动加入' : '私聊会话'}</p>
+      <div class="scene-tabs fade-in" style="animation-delay: 100ms;">
+        <div class="scene-tab active" data-scene="ai">AI 随心聊</div>
+        <div class="scene-tab" data-scene="cross">跨界碎碎念</div>
+        <div class="scene-tab" data-scene="growth">成长组队同行</div>
+      </div>
+
+      <button class="btn btn-secondary mb-6 fade-in" onclick="openNewPostModal('chat')" style="animation-delay: 150ms;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        发起一个话题
+      </button>
+
+      <div class="posts-list fade-in" style="animation-delay: 200ms;">
+        ${posts.length > 0 ? posts.map(post => `
+          <div class="post-card">
+            <div class="post-header">
+              <div class="post-avatar">${post.author?.avatar || '分'}</div>
+              <div class="post-meta">
+                <div class="post-author">${post.author?.name || '匿名伙伴'}</div>
+                <div class="post-time">${formatTime(post.timestamp)}</div>
               </div>
             </div>
-            <div class="chat-messages" id="chat-messages">
-              ${messages.map(message => `
-                <div class="chat-message ${message.authorId === Store.getCurrentUser()?.id ? 'mine' : ''}">
-                  <div class="chat-message-avatar">${escapeHtml(message.authorAvatar || Array.from(message.authorName || '友')[0])}</div>
-                  <div class="chat-message-body">
-                    <div class="chat-message-meta">
-                      <span>${escapeHtml(message.authorName || '成员')}</span>
-                      <time>${formatTime(message.timestamp)}</time>
-                    </div>
-                    <div class="chat-bubble">${escapeHtml(message.content)}</div>
-                  </div>
-                </div>
-              `).join('')}
+            <div class="post-content">${post.content}</div>
+            <div class="post-actions">
+              <span class="post-action" onclick="toggleLike(${post.id})">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                <span>${post.likes || 0}</span>
+              </span>
+              <span class="post-action" onclick="openComments(${post.id})">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span>${post.comments?.length || 0}</span>
+              </span>
             </div>
-            <form class="chat-compose" onsubmit="sendChatMessage(event)">
-              <input class="input" id="chat-input" autocomplete="off" placeholder="输入消息，按回车发送">
-              <button class="btn btn-primary" type="submit">发送</button>
-            </form>
-          ` : `
-            <div class="empty-state">
-              <h3>正在准备全员群</h3>
-              <p>稍等片刻后即可开始聊天。</p>
-            </div>
-          `}
-        </section>
+          </div>
+        `).join('') : `
+          <div class="empty-state">
+            <div style="font-size: 48px; margin-bottom: 16px;">☕</div>
+            <h3>圆桌还没热起来</h3>
+            <p>来发起第一个话题吧，随便聊什么都行～</p>
+          </div>
+        `}
       </div>
     `;
   },
@@ -403,16 +377,16 @@ const Router = {
             <div class="resource-header">
               <div class="resource-icon">📄</div>
               <div class="resource-info">
-                <div class="resource-title">${escapeHtml(resource.title)}</div>
-                <div class="resource-desc">${escapeHtml(resource.desc)}</div>
+                <div class="resource-title">${resource.title}</div>
+                <div class="resource-desc">${resource.desc}</div>
               </div>
             </div>
             <div class="resource-meta">
               <div>
-                <span class="tag">${escapeHtml(resource.category)}</span>
-                <span style="font-size: 12px; color: var(--color-text-hint); margin-left: 8px;">来自 ${escapeHtml(resource.uploader)}</span>
+                <span class="tag">${resource.category}</span>
+                <span style="font-size: 12px; color: var(--color-text-hint); margin-left: 8px;">来自 ${resource.uploader}</span>
               </div>
-              ${resource.url ? `<a class="btn btn-sm btn-ghost" href="${escapeHtml(resource.url)}" target="_blank" rel="noopener">预览</a>` : '<button class="btn btn-sm btn-ghost" disabled>预览</button>'}
+              <button class="btn btn-sm btn-ghost">预览</button>
             </div>
           </div>
         `).join('')}
@@ -439,25 +413,25 @@ const Router = {
                   <circle cx="12" cy="12" r="10"/>
                   <polyline points="12 6 12 12 16 14"/>
                 </svg>
-                ${escapeHtml(activity.time)}
+                ${activity.time}
               </div>
-              <div class="activity-title">${escapeHtml(activity.title)}</div>
+              <div class="activity-title">${activity.title}</div>
             </div>
             <div class="activity-body">
-              <div class="activity-desc">${escapeHtml(activity.desc)}</div>
+              <div class="activity-desc">${activity.desc}</div>
               <div class="activity-footer">
                 <div class="activity-attendees">
                   <div class="avatar-group">
-                    ${(activity.attendees || []).slice(0, 4).map(name => `
-                      <div class="avatar">${escapeHtml(Array.from(name)[0])}</div>
+                    ${activity.attendees.slice(0, 4).map(name => `
+                      <div class="avatar">${name[0]}</div>
                     `).join('')}
-                    ${(activity.attendees || []).length > 4 ? `
+                    ${activity.attendees.length > 4 ? `
                       <div class="avatar">+${activity.attendees.length - 4}</div>
                     ` : ''}
                   </div>
-                  <span style="font-size: 12px; color: var(--color-text-hint); margin-left: 8px;">${(activity.attendees || []).length}人参与</span>
+                  <span style="font-size: 12px; color: var(--color-text-hint); margin-left: 8px;">${activity.attendees.length}人参与</span>
                 </div>
-                <button class="btn btn-sm btn-primary" onclick="joinActivity(${activity.id})">${activity.status === 'past' ? '看看小记' : '报名参加'}</button>
+                <button class="btn btn-sm btn-primary">${activity.status === 'past' ? '看看小记' : '报名参加'}</button>
               </div>
             </div>
           </div>
@@ -473,7 +447,7 @@ const Router = {
             <ul style="list-style: none; padding: 0;">
               ${pastActivity.notes.map(note => `
                 <li style="padding: 12px 0; border-bottom: 1px solid var(--color-border-light);">
-                  ${escapeHtml(note)}
+                  ${note}
                 </li>
               `).join('')}
             </ul>
@@ -487,7 +461,6 @@ const Router = {
   // ===== 成长打卡 =====
   _renderCheckinPage() {
     const currentUser = Store.getCurrentUser();
-    const checkins = Store.getCheckins();
 
     return `
       <div class="page-header fade-in">
@@ -512,24 +485,11 @@ const Router = {
 
       <div class="fade-in" style="animation-delay: 200ms;">
         <h2 style="margin-bottom: 24px;">📖 打卡记录</h2>
-        ${checkins.length > 0 ? checkins.map(item => `
-          <div class="post-card">
-            <div class="post-header">
-              <div class="post-avatar">${escapeHtml(item.avatar || currentUser?.avatar || '我')}</div>
-              <div class="post-meta">
-                <div class="post-author">${escapeHtml(item.author || currentUser?.name || '我')}</div>
-                <div class="post-time">${formatTime(item.timestamp)}</div>
-              </div>
-            </div>
-            <div class="post-content">${escapeHtml(item.content)}</div>
-          </div>
-        `).join('') : `
-          <div class="card" style="padding: 32px; text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 16px;">🌿</div>
-            <h3 style="margin-bottom: 8px;">还没有记录</h3>
-            <p style="color: var(--color-text-secondary);">开始记录你的成长之旅吧～</p>
-          </div>
-        `}
+        <div class="card" style="padding: 32px; text-align: center;">
+          <div style="font-size: 48px; margin-bottom: 16px;">🌿</div>
+          <h3 style="margin-bottom: 8px;">还没有记录</h3>
+          <p style="color: var(--color-text-secondary);">开始记录你的成长之旅吧～</p>
+        </div>
       </div>
 
       <div class="mt-8 fade-in" style="animation-delay: 300ms;">
@@ -571,14 +531,14 @@ const Router = {
         <div class="wishes-list">
           ${wishes.length > 0 ? wishes.map(wish => `
             <div class="wish-card">
-              <div class="wish-author">${wish.anonymous ? '匿名' : escapeHtml(wish.author)} · ${formatTime(wish.timestamp)}</div>
-              <div class="wish-content">${escapeHtml(wish.content)}</div>
+              <div class="wish-author">${wish.anonymous ? '匿名' : wish.author} · ${formatTime(wish.timestamp)}</div>
+              <div class="wish-content">${wish.content}</div>
               <div class="wish-actions">
-                <span class="post-action" onclick="echoWish(${wish.id})">
+                <span class="post-action">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                   </svg>
-                  <span>呼应 ${wish.echoes || ''}</span>
+                  <span>呼应</span>
                 </span>
               </div>
             </div>
@@ -606,14 +566,10 @@ const Router = {
       <div class="profile-header fade-in" style="animation-delay: 100ms;">
         <div class="profile-avatar">${user?.avatar || '我'}</div>
         <div class="profile-info">
-          <h2>${escapeHtml(user?.name || '我')}</h2>
-          <p>${escapeHtml(user?.intro || '设置你的个人简介吧～')}</p>
+          <h2>${user?.name || '我'}</h2>
+          <p>${user?.intro || '设置你的个人简介吧～'}</p>
         </div>
-        <div class="profile-actions">
-          ${Store.isAdmin() ? '<a class="btn btn-ghost btn-sm" href="/admin.html">管理后台</a>' : ''}
-          <button class="btn btn-ghost btn-sm" onclick="openEditProfileModal()">编辑资料</button>
-          <button class="btn btn-ghost btn-sm" onclick="logout()">退出</button>
-        </div>
+        <button class="btn btn-ghost btn-sm" onclick="openEditProfileModal()">编辑资料</button>
       </div>
 
       <div class="profile-tabs fade-in" style="animation-delay: 150ms;">
@@ -657,14 +613,14 @@ const Router = {
 
       <div class="fade-in" style="animation-delay: 100ms;">
         ${notifications.length > 0 ? notifications.map(notif => `
-          <div class="card mb-4 ${notif.read ? '' : 'notification-unread'}" style="padding: 20px;" onclick="markNotificationRead(${notif.id})">
+          <div class="card mb-4" style="padding: 20px;">
             <div style="display: flex; align-items: flex-start; gap: 12px;">
               <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--color-primary-light); display: flex; align-items: center; justify-content: center;">
                 ${notif.icon || '💬'}
               </div>
               <div style="flex: 1;">
-                <div style="font-weight: 500;">${escapeHtml(notif.title)}</div>
-                <div style="font-size: 14px; color: var(--color-text-secondary); margin-top: 4px;">${escapeHtml(notif.content)}</div>
+                <div style="font-weight: 500;">${notif.title}</div>
+                <div style="font-size: 14px; color: var(--color-text-secondary); margin-top: 4px;">${notif.content}</div>
                 <div style="font-size: 12px; color: var(--color-text-hint); margin-top: 8px;">${formatTime(notif.timestamp)}</div>
               </div>
             </div>
@@ -676,80 +632,6 @@ const Router = {
             <p>有伙伴互动时会在这里收到消息～</p>
           </div>
         `}
-      </div>
-    `;
-  },
-
-  _renderLoginPage() {
-    return `
-      <div class="auth-shell fade-in">
-        <section class="auth-hero">
-          <div class="auth-hero-mark">AI+X</div>
-          <h1>AI+X 小院</h1>
-          <p>面向 AI 学习者和实践者的高质量社群空间，把交流、资源、活动和成长记录放在同一个工作台里。</p>
-          <div class="auth-hero-grid">
-            <span>全员群聊</span>
-            <span>伙伴私聊</span>
-            <span>成长打卡</span>
-            <span>资源共建</span>
-          </div>
-        </section>
-        <section class="auth-panel">
-          <div class="auth-brand">🌸 AI+X 小院</div>
-          <h1>欢迎回来</h1>
-          <p>登录后进入小院，继续和伙伴们一起成长。</p>
-          <form class="auth-form" onsubmit="submitLogin(event)" autocomplete="off">
-            <div class="input-group">
-              <label class="input-label">邮箱</label>
-              <input class="input" id="login-email" type="email" autocomplete="off" required placeholder="请输入邮箱">
-            </div>
-            <div class="input-group">
-              <label class="input-label">密码</label>
-              <input class="input" id="login-password" type="password" autocomplete="new-password" required placeholder="请输入密码">
-            </div>
-            <button class="btn btn-primary btn-lg" type="submit">登录</button>
-          </form>
-          <div class="auth-switch">还没有账号？<button onclick="navigate('register')">注册加入</button></div>
-        </section>
-      </div>
-    `;
-  },
-
-  _renderRegisterPage() {
-    return `
-      <div class="auth-shell fade-in">
-        <section class="auth-hero">
-          <div class="auth-hero-mark">JOIN</div>
-          <h1>加入小院</h1>
-          <p>注册后即可进入全员群、认识伙伴、参与活动，并沉淀自己的 AI 学习路径。</p>
-          <div class="auth-hero-grid">
-            <span>真实用户</span>
-            <span>私密会话</span>
-            <span>资料管理</span>
-            <span>通知提醒</span>
-          </div>
-        </section>
-        <section class="auth-panel">
-          <div class="auth-brand">🌱 加入 AI+X 小院</div>
-          <h1>创建账号</h1>
-          <p>填写基础资料，进来后可以继续完善你的小窝。</p>
-          <form class="auth-form" onsubmit="submitRegister(event)" autocomplete="off">
-            <div class="input-group">
-              <label class="input-label">昵称</label>
-              <input class="input" id="register-name" required maxlength="40" placeholder="怎么称呼你？">
-            </div>
-            <div class="input-group">
-              <label class="input-label">邮箱</label>
-              <input class="input" id="register-email" type="email" autocomplete="email" required placeholder="you@example.com">
-            </div>
-            <div class="input-group">
-              <label class="input-label">密码</label>
-              <input class="input" id="register-password" type="password" autocomplete="new-password" minlength="8" required placeholder="至少 8 位">
-            </div>
-            <button class="btn btn-primary btn-lg" type="submit">注册并进入</button>
-          </form>
-          <div class="auth-switch">已有账号？<button onclick="navigate('login')">去登录</button></div>
-        </section>
       </div>
     `;
   }
@@ -772,22 +654,4 @@ function formatTime(timestamp) {
   if (diff < 604800000) return Math.floor(diff / 86400000) + '天前';
 
   return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
-}
-
-function escapeHtml(value) {
-  return String(value ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
-function displayConversationTitle(conversation) {
-  if (!conversation) return '';
-  if (conversation.type === 'group') return conversation.title;
-  const currentId = Store.getCurrentUser()?.id;
-  const other = (conversation.participants || []).find(user => user.id !== currentId && user.role !== 'admin')
-    || (conversation.participants || []).find(user => user.id !== currentId);
-  return other?.name || conversation.title || '私聊';
 }

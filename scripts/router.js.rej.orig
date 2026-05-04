@@ -1,0 +1,56 @@
+@@ -478,18 +505,31 @@
+         </div>
+         <textarea class="checkin-input" placeholder="今天学了什么、做了什么小尝试、有什么新感悟... 随便写~" id="checkin-input"></textarea>
+         <div class="checkin-submit flex flex-between" style="align-items: center;">
+-          <span style="font-size: 12px; color: var(--color-text-hint);">每日自 愿记录，不需要每天都打</span>
++          <span style="font-size: 12px; color: var(--color-text-hint);">每日自 愿记录，不需要每天都打</div>
+           <button class="btn btn-primary" onclick="submitCheckin()">记录一下</button>
+         </div>
+       </div>
+ 
+       <div class="fade-in" style="animation-delay: 200ms;">
+         <h2 style="margin-bottom: 24px;">📖 打卡记录</h2>
+-        <div class="card" style="padding: 32px; text-align: center;">
+-          <div style="font-size: 48px; margin-bottom: 16px;">🌿</div>
+-          <h3 style="margin-bottom: 8px;">还没有记录</h3>
+-          <p style="color: var(--color-text-secondary);">开始记录你的成长之旅吧～</p>
+-        </div>
++        ${checkins.length > 0 ? checkins.map(item => `
++          <div class="post-card">
++            <div class="post-header">
++              <div class="post-avatar">${escapeHtml(item.avatar || currentUser?.avatar || '我')}</div>
++              <div class="post-meta">
++                <div class="post-author">${escapeHtml(item.author || currentUser?.name || '我')}</div>
++                <div class="post-time">${formatTime(item.timestamp)}</div>
++              </div>
++            </div>
++            <div class="post-content">${escapeHtml(item.content)}</div>
++          </div>
++        `).join('') : `
++          <div class="card" style="padding: 32px; text-align: center;">
++            <div style="font-size: 48px; margin-bottom: 16px;">🌿</div>
++            <h3 style="margin-bottom: 8px;">还没有记录</h3>
++            <p style="color: var(--color-text-secondary);">开始记录你的成长之旅吧～</p>
++          </div>
++        `}
+       </div>
+ 
+       <div class="mt-8 fade-in" style="animation-delay: 300ms;">
+@@ -566,10 +606,14 @@
+       <div class="profile-header fade-in" style="animation-delay: 100ms;">
+         <div class="profile-avatar">${user?.avatar || '我'}</div>
+         <div class="profile-info">
+-          <h2>${user?.name || '我'}</h2>
+-          <p>${user?.intro || '设置你的个人简介吧～'}</p>
++          <h2>${escapeHtml(user?.name || '我')}</h2>
++          <p>${escapeHtml(user?.intro || '设置你的个人简介吧～')}</p>
++        </div>
++        <div class="profile-actions">
++          ${Store.isAdmin() ? '<a class="btn btn-ghost btn-sm" href="/admin.html">管理后台</a>' : ''}
++          <button class="btn btn-ghost btn-sm" onclick="openEditProfileModal()">编辑资料</button>
++          <button class="btn btn-ghost btn-sm" onclick="logout()">退出</button>
+         </div>
+-        <button class="btn btn-ghost btn-sm" onclick="openEditProfileModal()"> 编辑资料</button>
+       </div>
+ 
+       <div class="profile-tabs fade-in" style="animation-delay: 150ms;">

@@ -14,6 +14,7 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -22,6 +23,10 @@ body {
   line-height: 1.6;
   color: var(--color-text-primary);
   background-color: var(--color-background);
+  min-height: 100vh;
+}
+
+#app {
   min-height: 100vh;
 }
 
@@ -80,6 +85,8 @@ select {
   font-size: inherit;
   outline: none;
   border: none;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 input:focus,
@@ -101,10 +108,45 @@ ul, ol {
 
 .main-content {
   flex: 1;
+  width: 100%;
   max-width: var(--content-max-width);
   margin: 0 auto;
-  padding: var(--space-8);
-  padding-bottom: 100px;
+  padding: calc(var(--header-height) + var(--space-12)) var(--space-8) 100px;
+}
+
+body.auth-page .header,
+body.auth-page .sidebar,
+body.auth-page .bottom-nav {
+  display: none !important;
+}
+
+body.auth-page .main-content {
+  max-width: none;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 0;
+}
+
+body.app-page .main-content {
+  width: calc(100% - var(--sidebar-width));
+  max-width: none;
+  margin-left: var(--sidebar-width);
+  margin-right: 0;
+  padding-top: calc(var(--header-height) + var(--space-12));
+}
+
+body.app-page:not(.page-chat) .main-content {
+  padding-left: max(var(--space-8), calc((100vw - var(--sidebar-width) - var(--content-max-width)) / 2));
+  padding-right: max(var(--space-8), calc((100vw - var(--sidebar-width) - var(--content-max-width)) / 2));
+}
+
+body.page-chat .main-content {
+  width: calc(100% - var(--sidebar-width));
+  max-width: none;
+  margin-left: var(--sidebar-width);
+  padding-left: var(--space-8);
+  padding-right: var(--space-8);
 }
 
 /* 页面标题区 */
@@ -162,8 +204,21 @@ ul, ol {
 /* 响应式 */
 @media (max-width: 768px) {
   .main-content {
-    padding: var(--space-6);
-    padding-bottom: 80px;
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    padding: calc(var(--header-height) + var(--space-8)) var(--space-6) 80px;
+  }
+
+  body.auth-page .main-content {
+    padding: 0;
+  }
+
+  body.page-chat .main-content {
+    width: 100%;
+    margin-left: 0;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
   }
 
   .page-header {

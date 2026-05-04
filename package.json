@@ -1,0 +1,15 @@
+{
+  "name": "ai-x-community",
+  "version": "1.0.0",
+  "description": "AI+X 小院社群全栈应用",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "node --no-warnings server/index.js",
+    "dev": "NODE_ENV=development node --no-warnings server/index.js",
+    "test": "node --no-warnings --test"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}

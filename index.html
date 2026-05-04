@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI+X 小院</title>
-  <link rel="stylesheet" href="styles/variables.css">
-  <link rel="stylesheet" href="styles/base.css">
-  <link rel="stylesheet" href="styles/components.css">
-  <link rel="stylesheet" href="styles/pages.css">
+  <link rel="stylesheet" href="styles/variables.css?v=20260504d">
+  <link rel="stylesheet" href="styles/base.css?v=20260504d">
+  <link rel="stylesheet" href="styles/components.css?v=20260504d">
+  <link rel="stylesheet" href="styles/pages.css?v=20260504d">
 </head>
-<body>
+<body class="auth-page">
   <div id="app">
     <!-- 头部 -->
     <header class="header">
@@ -27,7 +27,7 @@
         </button>
         <div class="header-user" onclick="navigate('profile')">
           <div class="header-user-avatar" id="user-avatar">桐</div>
-          <span style="font-size: 14px;">我的小窝</span>
+          <span style="font-size: 14px;" id="header-user-name">我的小窝</span>
         </div>
       </div>
     </header>
@@ -52,17 +52,18 @@
           </svg>
           <span>伙伴小屋</span>
         </div>
+        <div class="nav-item" data-page="chat" onclick="navigate('chat')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            <path d="M8 9h8M8 13h5"/>
+          </svg>
+          <span>小院群聊</span>
+        </div>
         <div class="nav-item" data-page="moments" onclick="navigate('moments')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
           </svg>
           <span>暖心时刻</span>
-        </div>
-        <div class="nav-item" data-page="chat" onclick="navigate('chat')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-          </svg>
-          <span>闲谈圆桌</span>
         </div>
         <div class="nav-item" data-page="resources" onclick="navigate('resources')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -125,7 +126,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
           </svg>
-          <span>闲聊</span>
+          <span>群聊</span>
         </div>
         <div class="bottom-nav-item" data-page="profile" onclick="navigate('profile')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -148,9 +149,9 @@
     <div class="toast" id="toast"></div>
   </div>
 
-  <script src="scripts/store.js"></script>
-  <script src="scripts/router.js"></script>
-  <script src="scripts/components.js"></script>
-  <script src="scripts/app.js"></script>
+  <script src="scripts/store.js?v=20260504d"></script>
+  <script src="scripts/router.js?v=20260504d"></script>
+  <script src="scripts/components.js?v=20260504d"></script>
+  <script src="scripts/app.js?v=20260504d"></script>
 </body>
 </html>
